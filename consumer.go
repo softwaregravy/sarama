@@ -252,6 +252,8 @@ type PartitionConsumer interface {
 	// Close on the underlying client.
 	Close() error
 
+	SetOffset(int64)
+
 	// Messages returns the read channel for the messages that are returned by
 	// the broker.
 	Messages() <-chan *ConsumerMessage
@@ -405,6 +407,11 @@ func (child *partitionConsumer) Close() error {
 		return errors
 	}
 	return nil
+}
+
+// Continue reading messages starting at offset `n`. This doesn't commit the offset to Kafka.
+func (child *partitionConsumer) SetOffset(n int64) {
+	atomic.StoreInt64(&child.offset, n)
 }
 
 func (child *partitionConsumer) HighWaterMarkOffset() int64 {
@@ -696,7 +703,7 @@ func (bc *brokerConsumer) fetchNewMessages() (*FetchResponse, error) {
 	}
 
 	for child := range bc.subscriptions {
-		request.AddBlock(child.topic, child.partition, child.offset, child.fetchSize)
+		request.AddBlock(child.topic, child.partition, atomic.LoadInt64(&child.offset), child.fetchSize)
 	}
 
 	return bc.broker.Fetch(request)

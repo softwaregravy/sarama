@@ -100,6 +100,46 @@ func TestConsumerOffsetNewest(t *testing.T) {
 	broker0.Close()
 }
 
+func TestConsumerResetOffset(t *testing.T) {
+	// Given
+	broker0 := NewMockBroker(t, 0)
+	broker0.SetHandlerByMap(map[string]MockResponse{
+		"MetadataRequest": NewMockMetadataResponse(t).
+			SetBroker(broker0.Addr(), broker0.BrokerID()).
+			SetLeader("my_topic", 0, broker0.BrokerID()),
+		"OffsetRequest": NewMockOffsetResponse(t).
+			SetOffset("my_topic", 0, OffsetNewest, 10).
+			SetOffset("my_topic", 0, OffsetOldest, 7),
+		"FetchRequest": NewMockFetchResponse(t, 1).
+			SetMessage("my_topic", 0, 9, testMsg).
+			SetMessage("my_topic", 0, 10, testMsg).
+			SetMessage("my_topic", 0, 11, testMsg).
+			SetHighWaterMark("my_topic", 0, 14),
+	})
+
+	master, err := NewConsumer([]string{broker0.Addr()}, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// When
+	consumer, err := master.ConsumePartition("my_topic", 0, OffsetNewest)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Then
+	assertMessageOffset(t, <-consumer.Messages(), 10)
+
+	consumer.SetOffset(9)
+
+	assertMessageOffset(t, <-consumer.Messages(), 9)
+
+	safeClose(t, consumer)
+	safeClose(t, master)
+	broker0.Close()
+}
+
 // It is possible to close a partition consumer and create the same anew.
 func TestConsumerRecreate(t *testing.T) {
 	// Given
