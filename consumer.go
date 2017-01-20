@@ -440,16 +440,15 @@ func (child *partitionConsumer) responseFeeder() {
 
 feederLoop:
 	for response := range child.feeder {
-		log.Info("SARAMA RESPONSE RECEIVED:")
-		for topic, partBlocks := range response.Blocks {
-			for partition, block := range partBlocks {
+		if blocks, ok := response.Blocks[child.topic]; ok {
+			if block, ok := blocks[child.partition]; ok {
 				messages := block.MsgSet.Messages
 				if len(messages) > 0 {
 					first := messages[0]
 					last := messages[len(messages)-1]
-					log.Infof("SARAMA GOT topic=%s part=%d highwater=%d count=%d from=%d to=%d", topic, partition, block.HighWaterMarkOffset, len(messages), first.Offset, last.Offset)
+					log.Infof("SARAMA GOT topic=%s part=%d highwater=%d count=%d from=%d to=%d", child.topic, child.partition, block.HighWaterMarkOffset, len(messages), first.Offset, last.Offset)
 				} else {
-					log.Infof("SARAMA GOT topic=%s part=%d highwater=%d count=0", topic, partition, block.HighWaterMarkOffset)
+					log.Infof("SARAMA GOT topic=%s part=%d highwater=%d count=0", child.topic, child.partition, block.HighWaterMarkOffset)
 				}
 			}
 		}
