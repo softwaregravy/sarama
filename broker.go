@@ -257,7 +257,7 @@ func (b *Broker) Produce(request *ProduceRequest) (*ProduceResponse, error) {
 func (b *Broker) Fetch(request *FetchRequest) (*FetchResponse, error) {
 	response := new(FetchResponse)
 
-	log.Info("SARAMA FETCH: %#v", request)
+	log.Infof("SARAMA FETCH: %#v", request)
 
 	err := b.sendAndReceive(request, response)
 
@@ -285,8 +285,6 @@ func (b *Broker) CommitOffset(request *OffsetCommitRequest) (*OffsetCommitRespon
 func (b *Broker) FetchOffset(request *OffsetFetchRequest) (*OffsetFetchResponse, error) {
 	response := new(OffsetFetchResponse)
 
-	log.Infof("SARAMA FETCHOFFSET: %#v", request)
-
 	err := b.sendAndReceive(request, response)
 
 	if err != nil {
@@ -299,8 +297,6 @@ func (b *Broker) FetchOffset(request *OffsetFetchRequest) (*OffsetFetchResponse,
 func (b *Broker) JoinGroup(request *JoinGroupRequest) (*JoinGroupResponse, error) {
 	response := new(JoinGroupResponse)
 
-	log.Info("SARAMA JOINGROUP: %#v", request)
-
 	err := b.sendAndReceive(request, response)
 	if err != nil {
 		return nil, err
@@ -311,8 +307,6 @@ func (b *Broker) JoinGroup(request *JoinGroupRequest) (*JoinGroupResponse, error
 
 func (b *Broker) SyncGroup(request *SyncGroupRequest) (*SyncGroupResponse, error) {
 	response := new(SyncGroupResponse)
-
-	log.Info("SARAMA SYNCGROUP: %#v", request)
 
 	err := b.sendAndReceive(request, response)
 	if err != nil {
@@ -325,8 +319,6 @@ func (b *Broker) SyncGroup(request *SyncGroupRequest) (*SyncGroupResponse, error
 func (b *Broker) LeaveGroup(request *LeaveGroupRequest) (*LeaveGroupResponse, error) {
 	response := new(LeaveGroupResponse)
 
-	log.Info("SARAMA LEAVEGROUP: %#v", request)
-
 	err := b.sendAndReceive(request, response)
 	if err != nil {
 		return nil, err
@@ -337,8 +329,6 @@ func (b *Broker) LeaveGroup(request *LeaveGroupRequest) (*LeaveGroupResponse, er
 
 func (b *Broker) Heartbeat(request *HeartbeatRequest) (*HeartbeatResponse, error) {
 	response := new(HeartbeatResponse)
-
-	log.Info("SARAMA HEARTBEAT: %#v", request)
 
 	err := b.sendAndReceive(request, response)
 	if err != nil {

@@ -447,9 +447,9 @@ feederLoop:
 				if len(messages) > 0 {
 					first := messages[0]
 					last := messages[len(messages)-1]
-					log.Info("SARAMA GOT topic=%s part=%d highwater=%d count=%d from=%d to=%d", topic, partition, block.HighWaterMarkOffset, len(messages), first.Offset, last.Offset)
+					log.Infof("SARAMA GOT topic=%s part=%d highwater=%d count=%d from=%d to=%d", topic, partition, block.HighWaterMarkOffset, len(messages), first.Offset, last.Offset)
 				} else {
-					log.Info("SARAMA GOT topic=%s part=%d highwater=%d count=0", topic, partition, block.HighWaterMarkOffset)
+					log.Infof("SARAMA GOT topic=%s part=%d highwater=%d count=0", topic, partition, block.HighWaterMarkOffset)
 				}
 			}
 		}
