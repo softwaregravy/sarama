@@ -6,6 +6,8 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/segmentio/kit/log"
 )
 
 // ConsumerMessage encapsulates a Kafka message returned by the consumer.
@@ -729,6 +731,7 @@ func (bc *brokerConsumer) fetchNewMessages() (*FetchResponse, error) {
 
 	for child := range bc.subscriptions {
 		request.AddBlock(child.topic, child.partition, child.offset, child.fetchSize)
+		log.Infof("SARAMA FETCHNEWMESSAGES BLOCK: topic=%s part=%d offset=%d fetchSize=%d", child.topic, child.partition, child.offset, child.fetchSize)
 	}
 
 	return bc.broker.Fetch(request)
