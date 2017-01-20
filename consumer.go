@@ -518,6 +518,8 @@ func (child *partitionConsumer) parseResponse(response *FetchResponse) ([]*Consu
 	child.fetchSize = child.conf.Consumer.Fetch.Default
 	atomic.StoreInt64(&child.highWaterMarkOffset, block.HighWaterMarkOffset)
 
+	log.Infof("SARAMA PARSERESPONSE highwater=%d messages=%d", block.HighWaterMarkOffset, len(block.MsgSet.Messages))
+
 	incomplete := false
 	prelude := true
 	var messages []*ConsumerMessage
