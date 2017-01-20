@@ -440,6 +440,20 @@ func (child *partitionConsumer) responseFeeder() {
 
 feederLoop:
 	for response := range child.feeder {
+		log.Info("SARAMA RESPONSE RECEIVED:")
+		for topic, partBlocks := range response.Blocks {
+			for partition, block := range partBlocks {
+				messages := block.MsgSet.Messages
+				if len(messages) > 0 {
+					first := messages[0]
+					last := messages[len(messages)-1]
+					log.Info("SARAMA GOT topic=%s part=%d highwater=%d count=%d from=%d to=%d", topic, partition, block.HighWaterMarkOffset, len(messages), first.Offset, last.Offset)
+				} else {
+					log.Info("SARAMA GOT topic=%s part=%d highwater=%d count=0", topic, partition, block.HighWaterMarkOffset)
+				}
+			}
+		}
+
 		msgs, child.responseResult = child.parseResponse(response)
 
 		for i, msg := range msgs {
